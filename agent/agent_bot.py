@@ -3755,8 +3755,17 @@ class AgentBotHandlers:
                 parse_mode=None
             )
     
-    def _show_country_products_page(self, message, country_codes: List[str], all_products: List[Dict], page: int = 1, per_page: int = 10):
-        """显示国家商品搜索结果（分页）"""
+    def _show_country_products_page(self, message, country_codes: List[str], all_products: List[Dict], page: int = 1, per_page: int = 10, is_edit: bool = False):
+        """显示国家商品搜索结果（分页）
+        
+        Args:
+            message: Message对象（用户消息或bot消息）
+            country_codes: 国家代码列表
+            all_products: 所有商品列表
+            page: 当前页码
+            per_page: 每页显示数量
+            is_edit: 是否为编辑模式（True=编辑现有消息，False=发送新消息）
+        """
         try:
             # 构建标题
             country_names = []
@@ -3819,15 +3828,15 @@ class AgentBotHandlers:
             ])
             
             # 发送或编辑消息
-            if hasattr(message, 'edit_text'):
-                # 这是一个Query消息，使用edit
+            if is_edit:
+                # 编辑模式：更新现有bot消息（用于分页）
                 message.edit_text(
                     text=text,
                     reply_markup=InlineKeyboardMarkup(kb),
                     parse_mode=None
                 )
             else:
-                # 这是一个普通消息，使用reply
+                # 回复模式：发送新消息（用于首次搜索）
                 message.reply_text(
                     text=text,
                     reply_markup=InlineKeyboardMarkup(kb),
@@ -4178,7 +4187,8 @@ class AgentBotHandlers:
                             q.message, 
                             cache['country_codes'], 
                             cache['products'], 
-                            page=page
+                            page=page,
+                            is_edit=True  # ✅ 分页时编辑现有消息
                         )
                     else:
                         q.answer("搜索已过期，请重新搜索", show_alert=True)
