@@ -2021,7 +2021,7 @@ class AgentBotCore:
                     text = self.build_purchase_notify_text(
                         user_id=user_id,
                         product_name=product.get('projectname', ''),
-                        category=product.get('leixing', '未分类'),
+                        category=price_cfg.get('category') or product.get('leixing') or '未分类',
                         nowuid=product_nowuid,
                         quantity=quantity,
                         profit_per_unit=profit_per_unit,
